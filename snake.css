@@ -1,0 +1,77 @@
+body{
+    margin: 0;
+}
+*{
+    font-family: 'Press Start 2P', cursive;
+}
+.snake-board {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    width: 850px;
+    height: 650px;
+}
+
+.snake-board .preview {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.3;
+}
+
+.snake-board .score {
+    font-size: 26px;
+    color: #21219c;
+    position: absolute;
+    top: 10%;
+    left: 0;
+    text-align: center;
+    width: 100%;
+    display: none;
+}
+
+.snake-board button {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    color: green;
+    transform: translate(-50%, -50%);
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    cursor: pointer;
+    font-size: 30px;
+    background: transparent;
+    border: 0;
+    outline: none;
+}
+
+.snake-board button:hover {
+    color: #09bf09;
+}
+
+.snake-board table {
+    border-collapse: collapse;
+}
+
+.snake-board td {
+    width: 40px;
+    height: 40px;
+}
+
+.snake-board .col {
+    /* background-color: yellow; */
+    border: 1px solid #e8e8e8;
+}
+
+.snake-board .snake {
+    background-color: gray;
+}
+
+.snake-board .fruit {
+    background-color: tomato;
+}
