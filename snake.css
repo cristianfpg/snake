@@ -73,5 +73,25 @@ body{
 }
 
 .snake-board .fruit {
+    background-color: #c7c7c7;
+}
+.snake-board .fruit.dos {
+    background-color: #95ecff;
+}
+.snake-board .fruit.tres {
+    background-color: green;
+}
+.snake-board .fruit.cuatro {
+    background-color: orange;
+}
+.snake-board .fruit.cinco {
     background-color: tomato;
+}
+.snake-board .fruit.seis {
+    background-color: #82121F;
+}
+
+#actual-score{
+    color: #21219c;
+    text-align: center;
 }

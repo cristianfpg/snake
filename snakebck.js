@@ -1,19 +1,20 @@
 function initSnake(containerId, rowsCount, colsCount) {
     var board = new Board(containerId, rowsCount, colsCount);
-    var speed = 230;
+    var speed = 120;
     board.render();
     board.startButton().addEventListener("click", function () {
         board.hidePreview();
         var snake = new Snake(board, speed, new Cell(2, 2, "right"));
         snake.start();
     });
-    // document.addEventListener("keyup", event => {
-    //     if (event.keyCode === 32) {
-    //         board.hidePreview();
-    //         var snake = new Snake(board, speed, new Cell(2, 2, "right"));
-    //         snake.start();
-    //     }
-    // });
+    document.addEventListener("keyup", event => {
+        if (event.keyCode === 32) {
+            board.hidePreview();
+            var snake = new Snake(board, speed, new Cell(2, 2, "right"));
+            snake.start();
+        }
+    });
+
 }
 
 function Board(containerId, rowsCount, colsCount) {
@@ -68,12 +69,10 @@ function Snake(board, speed, head) {
     this.tail = head;
     this.cells = [head];
     this.board = board;
-    this.speed = speed;
-    this.level = "";
+    this.points = 0;
 
     var $snake = this;
     this.start = function () {
-        var _this = this;
         document.getElementById('actual-score').innerText = 1;
         addClass(document.getElementById(cellId(head.row, head.col)), "snake");
 
@@ -81,12 +80,12 @@ function Snake(board, speed, head) {
         addKeyboardListener(this);
         addSwipeListener(this);
 
-        var intervalId = function () {
+        var intervalId = setInterval(function () {
             var newCells = [];
 
             var headMovingResult = moveHead();
             if (!headMovingResult) {
-                // clearInterval(intervalo);
+                clearInterval(intervalId);
                 $snake.board.setScoreValue($snake.cells.length);
                 $snake.board.showResults();
                 return;
@@ -104,11 +103,7 @@ function Snake(board, speed, head) {
                 $snake.grow();
                 addFruitToBoard($snake.board, $snake);
             }
-
-            setTimeout(intervalId,_this.speed);
-        };
-
-        setTimeout(intervalId,_this.speed);
+        }, speed);
 
         function moveHead() {
             var newHead = $snake.head.next();
@@ -149,24 +144,21 @@ function Snake(board, speed, head) {
 
     this.grow = function () {
         var newTail = this.tail.prev();
-        this.cells.push(newTail);
-        this.tail = newTail;
-        document.getElementById('actual-score').innerText = this.cells.length;
-
-        var longitudCulebra = this.cells.length;
-
-        if(longitudCulebra >=3 && longitudCulebra < 7){
-            this.speed = 200;
-            this.level = " dos";
-        }else if(longitudCulebra >=7 && longitudCulebra < 13){
-            this.speed = 170;
-        }else if(longitudCulebra >=13 && longitudCulebra < 20){
-            this.speed = 140;
-        }else if(longitudCulebra >=20 && longitudCulebra < 30){
-            this.speed = 110;
-        }else if(longitudCulebra >=30){
-            this.speed = 80;
+        var j=1;
+        if(this.cells.length>3){
+            j=5;
         }
+        if(this.cells.length>6){
+            j=90;
+        }
+        this.cells.push(newTail);
+        for (var i=1; i<=j; i++){
+            this.points++;
+        }
+
+        this.tail = newTail;
+
+        document.getElementById('actual-score').innerText = this.points;
     };
 
     this.containsCell = function (row, col) {
@@ -181,7 +173,6 @@ function Snake(board, speed, head) {
 }
 
 function addFruitToBoard(board, snake) {
-    console.log(snake.level);
     do {
         var row = Math.floor(Math.random() * board.rowsCount);
         var col = Math.floor(Math.random() * board.colsCount);
