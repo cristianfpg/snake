@@ -1,3 +1,5 @@
+var puntajesVal = {};
+
 function initSnake(containerId, rowsCount, colsCount) {
     var board = new Board(containerId, rowsCount, colsCount);
     var speed = 230;
@@ -7,13 +9,6 @@ function initSnake(containerId, rowsCount, colsCount) {
         var snake = new Snake(board, speed, new Cell(2, 2, "right"));
         snake.start();
     });
-    // document.addEventListener("keyup", event => {
-    //     if (event.keyCode === 32) {
-    //         board.hidePreview();
-    //         var snake = new Snake(board, speed, new Cell(2, 2, "right"));
-    //         snake.start();
-    //     }
-    // });
 }
 
 function Board(containerId, rowsCount, colsCount) {
@@ -30,7 +25,8 @@ function Board(containerId, rowsCount, colsCount) {
             }
             html += "</tr>"
         }
-        html += "</table><div class='preview'></div><div class='score'><p>Perdió por loca.</p><p>Su puntaje fue: </p><p class='score-value'></p></div><button type='button'>Inicio</button></div>";
+
+        html += "</table><div class='preview'></div><div class='score'><p class='mensaje'></p><p>Su puntaje fue: </p><p class='score-value'></p></div><button type='button'>Inicio</button><div class='puntajes'></div></div>";
         document.getElementById(containerId).innerHTML = html;
     };
 
@@ -39,6 +35,7 @@ function Board(containerId, rowsCount, colsCount) {
         container.getElementsByClassName("preview")[0].style.display = "none";
         container.getElementsByTagName("button")[0].style.display = "none";
         container.querySelector(".score").style.display = "none";
+        container.querySelector(".puntajes").style.display = "none";
     };
 
     this.startButton = function () {
@@ -51,15 +48,63 @@ function Board(containerId, rowsCount, colsCount) {
 
     this.showResults = function () {
         var container = document.getElementById(containerId);
-        container.getElementsByClassName("preview")[0].style.display = "block";
-        container.getElementsByTagName("button")[0].style.display = "block";
-        container.querySelector(".score").style.display = "block";
         var cells = container.getElementsByTagName("td");
+        var puntajeFinal = document.getElementById('actual-score').innerText;
+        var puntajesDivs = '';
+        var mensaje = '';
+
+        function getKeyByValue(object, value) {
+            return Object.keys(object).find(key => object[key] === value);
+        }
+        
+        var puntajesOrden = Object.values(puntajesVal).sort(function(a,b){
+            return b-a;
+        });
+        
         for (var i = 0; i < cells.length; i++) {
             var cell = cells[i];
             removeClass(cell, "fruit");
             removeClass(cell, "snake");
         }
+
+        var ultimoKey = Object.values(puntajesOrden)[Object.keys(puntajesVal).length-1];
+        var keyDiez = Object.values(puntajesOrden)[9];
+
+        // var ultimoVal = getKeyByValue(puntajesVal, Object.values(puntajesOrden)[Object.keys(puntajesVal).length-1]);
+
+        console.log(keyDiez);
+
+        if((keyDiez && keyDiez < puntajeFinal) || ultimoKey < puntajeFinal){
+            mensaje = "Buena la rata!";
+            container.querySelector(".mensaje").classList.add('positivo');
+
+            var neim = prompt("Buena la rata! Cuál es su neim?", "");
+
+            firebase.database().ref('puntajes').update({
+                [neim]: puntajeFinal
+                }).then(function() {
+                    actualizarPuntajes();
+            });
+        }else{
+            mensaje = "Perdió por loca";
+            container.querySelector(".mensaje").classList.remove('positivo');
+        }
+
+        container.getElementsByClassName("preview")[0].style.display = "block";
+        container.getElementsByTagName("button")[0].style.display = "block";
+        container.querySelector(".score").style.display = "block";
+        container.querySelector(".puntajes").style.display = "block";
+        container.querySelector(".mensaje").innerText = mensaje;
+        
+        for(var j = 0; j<10;j++){
+            var getVal = getKeyByValue(puntajesVal, Object.values(puntajesOrden)[j]);
+            if(!getVal) continue;
+            puntajesDivs += "<div>";
+            puntajesDivs += "<span class='posicion'>"+(j+1)+". </span><span class='nombre'>"+getVal+"</span><span class='puntaje'> - "+puntajesOrden[j]+"</span>";
+            puntajesDivs += "</div>"; 
+        }
+
+        container.querySelector(".puntajes").innerHTML = puntajesDivs;
     }
 }
 
@@ -181,7 +226,6 @@ function Snake(board, speed, head) {
 }
 
 function addFruitToBoard(board, snake) {
-    console.log(snake.level);
     do {
         var row = Math.floor(Math.random() * board.rowsCount);
         var col = Math.floor(Math.random() * board.colsCount);
@@ -277,3 +321,11 @@ function removeClass(element, className) {
 function cellId(row, col) {
     return "snake-board-" + row + "-" + col;
 }
+
+function actualizarPuntajes(){
+    firebase.database().ref('puntajes').once('value').then(function(snapshot) {
+        puntajesVal = snapshot.val();
+    });
+}
+
+actualizarPuntajes();
