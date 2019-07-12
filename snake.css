@@ -94,9 +94,10 @@ body{
 #actual-score{
     color: #21219c;
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 20px;
+    right: 20px;
     margin: 0;
+    font-size: 40px;
 }
 .puntajes{
     position: absolute;

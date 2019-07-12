@@ -313,8 +313,13 @@ function addClass(element, className) {
 }
 
 function removeClass(element, className) {
-    if (element.classList && element.classList.contains(className)) {
-        element.classList.remove(className);
+
+    if(element){
+        if (element.classList.contains(className)) {
+            element.classList.remove(className);
+        }
+    }else{
+        alert("Error desconocido");
     }
 }
 
